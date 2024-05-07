@@ -1,8 +1,10 @@
-
-import BibliotecaYL.Biblioteca;
-import  BibliotecaYL.Libro;
-import  BibliotecaYL.Rivista;
-import  BibliotecaYL.ElementoCatalogo;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import main.java.BibliotecaYL.Biblioteca;
+import main.java.entità.Libro;
+import main.java.entità.Rivista;
+import main.java.BibliotecaYL.ElementoCatalogo;
 
 import java.util.Scanner;
 import java.io.IOException;
@@ -11,15 +13,16 @@ import java.util.List;
 public class Main {
     static final int NUMERO_ARTICOLI = 3;
 
-
     public static void main(String[] args) {
+        // Inizializzazione dell'EntityManagerFactory
+        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("BibliotecaPU");
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
 
         Biblioteca biblioteca = new Biblioteca();
 
         Scanner scanner = new Scanner(System.in);
 
-
-        // Aggiunta di  NUMERO_ARTICOLI libri Chiedi all'utente di inserire i dettagli dei libri
+        // Aggiunta di NUMERO_ARTICOLI libri. Chiedi all'utente di inserire i dettagli dei libri
         for (int i = 1; i <= NUMERO_ARTICOLI; i++) {
             System.out.println("Inserisci i dettagli del libro " + i);
             System.out.print("ISBN: ");
@@ -74,21 +77,11 @@ public class Main {
                     break;
             }
 
-
             Rivista rivista = new Rivista(isbn, titolo, annoPubblicazione, numeroPagine, periodicita);
             biblioteca.aggiungiElemento(rivista);
         }
 
-
-        // // Ricerca per ISBN --- usare isbn 1(ovviamneto prima toccherebbe inserire un libro o rivista con questo isbn) non automatico ma staatico
-        // ElementoCatalogo elemento = biblioteca.ricercaPerISBN("1"); // Cambia l'ISBN se necessario
-        // if (elemento != null) {
-        //     System.out.println("Ricerca per ISBN: " + elemento.getTitolo());
-        // } else {
-        //     System.out.println("Nessun elemento trovato per l'ISBN specificato.");
-        // }
-
-        // Ricerca per ISBN dinamica con interazione utente1
+        // Ricerca per ISBN dinamica con interazione utente
         System.out.println("Inserisci l'ISBN per cercare un elemento:");
         String isbnCercato = scanner.nextLine();
         ElementoCatalogo elemento = biblioteca.ricercaPerISBN(isbnCercato);
@@ -98,17 +91,13 @@ public class Main {
             System.out.println("Nessun elemento trovato per l'ISBN specificato.");
         }
 
-        // Rimozione di un elemento statico
-        // biblioteca.rimuoviElemento("123-4-56-789012-3");
-
         // Rimozione di un elemento
         System.out.println("Inserisci l'ISBN dell'elemento da rimuovere:");
         String isbnDaRimuovere = scanner.nextLine();
         biblioteca.rimuoviElemento(isbnDaRimuovere);
         System.out.println("Elemento rimosso con successo, se presente nel catalogo.");
 
-
-        // Ricerca per anno di pubblicazione di elmento1
+        // Ricerca per anno di pubblicazione
         System.out.println("Inserisci l'anno di pubblicazione da cercare:");
         int annoDaCercare = Integer.parseInt(scanner.nextLine());
         List<ElementoCatalogo> risultatoRicercaAnno = biblioteca.ricercaPerAnnoPubblicazione(annoDaCercare);
@@ -149,9 +138,29 @@ public class Main {
         String fileLoad = scanner.nextLine();
         try {
             biblioteca.caricamentoDaDisco(fileLoad);
-            System.out.println("Archivio caricato con successone.");
+            System.out.println("Archivio caricato con successo.");
         } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Si è verificato un errore riprova fratello: " + e.getMessage());
+            System.out.println("Si è verificato un errore durante il caricamento: " + e.getMessage());
         }
+
+        // Salvataggio degli oggetti nel database utilizzando EntityManager
+        entityManager.getTransaction().begin();
+
+        for (Libro libro : biblioteca.getListaLibri()) {
+            entityManager.persist(libro);
+        }
+
+        for (Rivista rivista : biblioteca.getListaRiviste()) {
+            entityManager.persist(rivista);
+        }
+
+        entityManager.getTransaction().commit();
+
+        // Chiusura dell'EntityManager e dell'EntityManagerFactory
+        entityManager.close();
+        entityManagerFactory.close();
+
+        // Chiusura dello scanner
+        scanner.close();
     }
 }

@@ -1,0 +1,13 @@
+<persistence-unit name="BibliotecaPU" transaction-type="RESOURCE_LOCAL">
+    <class>main.java.entità.Libro</class>
+    <class>main.java.entità.Rivista</class>
+    <class>main.java.entità.Utente</class>
+
+    <!-- Configura la connessione al database -->
+    <properties>
+        <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+        <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/nome_database"/>
+        <property name="javax.persistence.jdbc.user" value="utente_database"/>
+        <property name="javax.persistence.jdbc.password" value="password_database"/>
+    </properties>
+</persistence-unit>

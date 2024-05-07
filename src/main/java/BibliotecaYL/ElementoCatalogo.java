@@ -1,6 +1,7 @@
-package BibliotecaYL;
+package main.java.BibliotecaYL;
 
 import java.io.Serializable;
+
 // le sottoclassi Libro e Rivista estenderanno la classee di questa fuznionalità astratta
 public abstract class ElementoCatalogo implements Serializable {
     private String isbn;

@@ -1,14 +1,13 @@
-package BibliotecaYL;
+package main.java.BibliotecaYL;
 
-import java.io.*; // fornisce classi per l'input e l'output
-import java.util.*; // List, Set, Map....
+import main.java.entità.Libro;
 
+import java.io.*;
+import java.util.*;
 
 public class Biblioteca {
-    //definisco un campo di istanza chiamato catalogo all'interno della classe Biblioteca
     private List<ElementoCatalogo> catalogo;
 
-    // catalogo viene inizializzato come una lista vuota
     public Biblioteca() {
         this.catalogo = new ArrayList<>();
     }
@@ -27,7 +26,6 @@ public class Biblioteca {
                 .findFirst()
                 .orElse(null);
     }
-
 
     public List<ElementoCatalogo> ricercaPerAnnoPubblicazione(int anno) {
         List<ElementoCatalogo> risultato = new ArrayList<>();
@@ -48,8 +46,6 @@ public class Biblioteca {
         }
         return risultato;
     }
-
-
 
     public void salvataggioSuDisco(String fileName) throws IOException {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName))) {
